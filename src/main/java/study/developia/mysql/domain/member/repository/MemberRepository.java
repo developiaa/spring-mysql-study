@@ -13,14 +13,13 @@ import study.developia.mysql.domain.member.entity.Member;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
 public class MemberRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final static String TABLE = "member";
+    private final static String TABLE = "Member";
 
     public Optional<Member> findById(Long id) {
         /**
@@ -53,7 +52,7 @@ public class MemberRepository {
         if (member.getId() == null) {
             return insert(member);
         }
-        return member;
+        return update(member);
     }
 
     private Member insert(Member member) {
@@ -72,7 +71,9 @@ public class MemberRepository {
     }
 
     private Member update(Member member) {
-        // TODO: implemented
+        String sql = String.format("UPDATE %s set email = :email, nickname = :nickname, birthday = :birthday WHERE id = :id", TABLE);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
+        namedParameterJdbcTemplate.update(sql, params);
         return member;
     }
 }
