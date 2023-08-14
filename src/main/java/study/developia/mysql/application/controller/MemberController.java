@@ -1,4 +1,4 @@
-package study.developia.mysql.controller;
+package study.developia.mysql.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
