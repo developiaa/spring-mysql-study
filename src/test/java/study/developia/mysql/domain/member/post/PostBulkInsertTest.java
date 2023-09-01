@@ -1,5 +1,6 @@
 package study.developia.mysql.domain.member.post;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
+//@Disabled
 @SpringBootTest
 public class PostBulkInsertTest {
     @Autowired
@@ -20,13 +22,13 @@ public class PostBulkInsertTest {
     @Test
     public void bulkInsert() {
         var easyRandom = PostFixtureFactory.get(
-                3L,
-                LocalDate.of(2022, 1, 1),
+                4L,
+                LocalDate.of(1970, 1, 1),
                 LocalDate.of(2022, 2, 1));
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        List<Post> posts = IntStream.range(0, 10000 * 100)
+        List<Post> posts = IntStream.range(0, 20000 * 100)
                 .mapToObj(i -> easyRandom.nextObject(Post.class))
                 .toList();
 
