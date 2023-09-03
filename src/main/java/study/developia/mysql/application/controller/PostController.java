@@ -2,7 +2,6 @@ package study.developia.mysql.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import study.developia.mysql.domain.post.dto.DailyPostCount;
