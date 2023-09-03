@@ -8,6 +8,8 @@ import study.developia.mysql.domain.post.dto.DailyPostCount;
 import study.developia.mysql.domain.post.dto.DailyPostCountRequest;
 import study.developia.mysql.domain.post.entity.Post;
 import study.developia.mysql.domain.post.repository.PostRepository;
+import study.developia.mysql.util.CursorRequest;
+import study.developia.mysql.util.PageCursor;
 
 import java.util.List;
 
@@ -26,5 +28,19 @@ public class PostReadService {
 
     public Page<Post> getPosts(Long memberId, Pageable pageable) {
         return postRepository.findAllByMemberId(memberId, pageable);
+    }
+
+    // 커서 방식의 페이징 구현
+    public PageCursor<Post> getPosts(Long memberId, CursorRequest cursorRequest) {
+        List<Post> posts = findAllBy(memberId, cursorRequest);
+        long nextKey = posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
+        return new PageCursor<>(cursorRequest.next(nextKey), posts);
+    }
+
+    private List<Post> findAllBy(Long memberId, CursorRequest cursorRequest) {
+        if (cursorRequest.hasKey()) {
+            return postRepository.findAllByLessThanIdAndMemberIdAndOrderByIdDesc(cursorRequest.key(), memberId, cursorRequest.size());
+        }
+        return postRepository.findAllByMemberIdAndOrderByIdDesc(memberId, cursorRequest.size());
     }
 }

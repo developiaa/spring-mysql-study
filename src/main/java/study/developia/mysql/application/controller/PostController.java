@@ -10,6 +10,8 @@ import study.developia.mysql.domain.post.dto.PostCommand;
 import study.developia.mysql.domain.post.entity.Post;
 import study.developia.mysql.domain.post.service.PostReadService;
 import study.developia.mysql.domain.post.service.PostWriteService;
+import study.developia.mysql.util.CursorRequest;
+import study.developia.mysql.util.PageCursor;
 
 import java.util.List;
 
@@ -33,6 +35,11 @@ public class PostController {
     @GetMapping("/members/{memberId}")
     public Page<Post> getPosts(@PathVariable Long memberId, Pageable pageable) {
         return postReadService.getPosts(memberId, pageable);
+    }
+
+    @GetMapping("/members/{memberId}/by-cursor")
+    public PageCursor<Post> getPosts(@PathVariable Long memberId, CursorRequest cursorRequest) {
+        return postReadService.getPosts(memberId, cursorRequest);
     }
 
 }
