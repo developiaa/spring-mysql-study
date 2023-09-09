@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import study.developia.mysql.application.usecase.GetTimelinePostsUseCase;
 import study.developia.mysql.domain.post.dto.DailyPostCount;
 import study.developia.mysql.domain.post.dto.DailyPostCountRequest;
 import study.developia.mysql.domain.post.dto.PostCommand;
@@ -21,6 +22,7 @@ import java.util.List;
 public class PostController {
     private final PostWriteService postWriteService;
     private final PostReadService postReadService;
+    private final GetTimelinePostsUseCase getTimelinePostsUseCase;
 
     @PostMapping
     public Long create(PostCommand command) {
@@ -42,4 +44,8 @@ public class PostController {
         return postReadService.getPosts(memberId, cursorRequest);
     }
 
+    @GetMapping("/members/{memberId}/timeline")
+    public PageCursor<Post> getTimeline(@PathVariable Long memberId, CursorRequest cursorRequest) {
+        return getTimelinePostsUseCase.execute(memberId, cursorRequest);
+    }
 }

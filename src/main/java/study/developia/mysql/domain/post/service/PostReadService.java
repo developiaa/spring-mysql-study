@@ -33,8 +33,18 @@ public class PostReadService {
     // 커서 방식의 페이징 구현
     public PageCursor<Post> getPosts(Long memberId, CursorRequest cursorRequest) {
         List<Post> posts = findAllBy(memberId, cursorRequest);
-        long nextKey = posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
+        long nextKey = getNextKey(posts);
         return new PageCursor<>(cursorRequest.next(nextKey), posts);
+    }
+
+    public PageCursor<Post> getPosts(List<Long> memberIds, CursorRequest cursorRequest) {
+        List<Post> posts = findAllBy(memberIds, cursorRequest);
+        long nextKey = getNextKey(posts);
+        return new PageCursor<>(cursorRequest.next(nextKey), posts);
+    }
+
+    private static long getNextKey(List<Post> posts) {
+        return posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
     }
 
     private List<Post> findAllBy(Long memberId, CursorRequest cursorRequest) {
@@ -42,5 +52,12 @@ public class PostReadService {
             return postRepository.findAllByLessThanIdAndMemberIdAndOrderByIdDesc(cursorRequest.key(), memberId, cursorRequest.size());
         }
         return postRepository.findAllByMemberIdAndOrderByIdDesc(memberId, cursorRequest.size());
+    }
+
+    private List<Post> findAllBy(List<Long> memberIds, CursorRequest cursorRequest) {
+        if (cursorRequest.hasKey()) {
+            return postRepository.findAllByLessThanIdInMemberIdsAndOrderByIdDesc(cursorRequest.key(), memberIds, cursorRequest.size());
+        }
+        return postRepository.findAllByInMemberIdAndOrderByIdDesc(memberIds, cursorRequest.size());
     }
 }
