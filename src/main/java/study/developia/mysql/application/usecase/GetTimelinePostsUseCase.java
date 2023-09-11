@@ -26,4 +26,14 @@ public class GetTimelinePostsUseCase {
         List<Long> followingMemberIds = followings.stream().map(Follow::getId).toList();
         return postReadService.getPosts(followingMemberIds, cursorRequest);
     }
+
+    public PageCursor<Post> executeByTimeline(Long memberId, CursorRequest cursorRequest) {
+        /**
+         * 1. Timeline 조회
+         * 2. 1번에 해당하는 게시물 조회
+         */
+        List<Follow> followings = followReadService.getFollowings(memberId);
+        List<Long> followingMemberIds = followings.stream().map(Follow::getId).toList();
+        return postReadService.getPosts(followingMemberIds, cursorRequest);
+    }
 }
