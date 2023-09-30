@@ -2,6 +2,7 @@ package study.developia.mysql.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.developia.mysql.domain.post.dto.PostCommand;
 import study.developia.mysql.domain.post.entity.Post;
 import study.developia.mysql.domain.post.repository.PostRepository;
@@ -18,5 +19,12 @@ public class PostWriteService {
                 .build();
 
         return postRepository.save(post).getId();
+    }
+
+    @Transactional
+    public void likePost(Long postId) {
+        Post post = postRepository.findById(postId, true).orElseThrow();
+        post.incrementLikeCount();
+        postRepository.save(post);
     }
 }

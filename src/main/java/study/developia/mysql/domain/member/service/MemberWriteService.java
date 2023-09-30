@@ -2,6 +2,7 @@ package study.developia.mysql.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.developia.mysql.domain.member.dto.RegisterMemberCommand;
 import study.developia.mysql.domain.member.entity.Member;
 import study.developia.mysql.domain.member.entity.MemberNicknameHistory;
@@ -15,6 +16,7 @@ public class MemberWriteService {
     private final MemberRepository memberRepository;
     private final MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
+    @Transactional
     public Member register(RegisterMemberCommand command) {
         /**
          * 목표 - 회원정보(이메일, 닉네임, 생년월일)를 등록한다.
