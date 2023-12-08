@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import study.developia.mysql.domain.member.entity.Member;
 import study.developia.mysql.util.PageHelper;
 import study.developia.mysql.domain.post.dto.DailyPostCount;
 import study.developia.mysql.domain.post.dto.DailyPostCountRequest;
@@ -37,6 +36,7 @@ public class PostRepository {
                     .createdDate(resultSet.getObject("createdDate", LocalDate.class))
                     .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
                     .likeCount(resultSet.getLong("likeCount"))
+                    .version(resultSet.getLong("version"))
                     .build();
 
     public static final RowMapper<DailyPostCount> DAILY_POST_COUNT_ROW_MAPPER =
@@ -231,10 +231,15 @@ public class PostRepository {
     private Post update(Post post) {
         String sql = String.format("UPDATE %s set memberId = :memberId," +
                 " contents = :contents, createdDate = :createdDate," +
-                " createdAt = :createdAt, likeCount = :likeCount " +
-                " WHERE id = :id", TABLE);
+                " createdAt = :createdAt, likeCount = :likeCount, " +
+                " version = :version + 1" +
+                " WHERE id = :id and version = :version", TABLE);
         SqlParameterSource params = new BeanPropertySqlParameterSource(post);
-        namedParameterJdbcTemplate.update(sql, params);
+        int updatedCount = namedParameterJdbcTemplate.update(sql, params);
+
+        if (updatedCount == 0) {
+            throw new RuntimeException("갱신실패");
+        }
         return post;
     }
 
