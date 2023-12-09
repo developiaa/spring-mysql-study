@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import study.developia.mysql.domain.member.dto.PostDto;
 import study.developia.mysql.domain.post.dto.DailyPostCount;
 import study.developia.mysql.domain.post.dto.DailyPostCountRequest;
 import study.developia.mysql.domain.post.entity.Post;
 import study.developia.mysql.domain.post.repository.PostRepository;
+import study.developia.mysql.domain.postlike.repository.PostLikeRepository;
 import study.developia.mysql.util.CursorRequest;
 import study.developia.mysql.util.PageCursor;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @Service
 public class PostReadService {
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
     public List<DailyPostCount> getDailyPostCount(DailyPostCountRequest request) {
         /**
@@ -26,8 +29,16 @@ public class PostReadService {
         return postRepository.groupByCreatedDate(request);
     }
 
-    public Page<Post> getPosts(Long memberId, Pageable pageable) {
-        return postRepository.findAllByMemberId(memberId, pageable);
+    public Page<PostDto> getPosts(Long memberId, Pageable pageable) {
+        return postRepository.findAllByMemberId(memberId, pageable).map(this::toDto);
+    }
+
+    private PostDto toDto(Post post) {
+        return new PostDto(post.getId(), post.getContents(), post.getCreatedAt(), postLikeRepository.count(post.getId()));
+    }
+
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId, false).orElseThrow();
     }
 
     // 커서 방식의 페이징 구현
